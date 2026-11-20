@@ -1,0 +1,138 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sasta GTA Assets</title>
+<style>
+:root{--bg:#f6f3ee;--card:#fff;--ink:#1d1b18;--mute:#6b655c;--line:#e4ddd2;--acc:#e8590c;--ok:#2f9e44;--no:#c92a2a}
+@media (prefers-color-scheme:dark){:root{--bg:#141311;--card:#1e1c19;--ink:#f1ece4;--mute:#a39b8f;--line:#332f29}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.5 system-ui,-apple-system,Segoe UI,sans-serif}
+header{position:sticky;top:0;z-index:5;background:var(--bg);border-bottom:1px solid var(--line);padding:14px 16px;display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+h1{font-size:20px;margin:0 auto 0 0}
+h1 span{color:var(--acc)}
+.stat{color:var(--mute);font-size:14px}
+button{font:inherit;border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:8px;padding:6px 12px;cursor:pointer}
+button.primary{background:var(--acc);border-color:var(--acc);color:#fff}
+main{max-width:1280px;margin:0 auto;padding:8px 16px 60px}
+h2{font-size:17px;margin:28px 0 12px}
+.intro{color:var(--mute);max-width:860px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:16px}
+.card{background:var(--card);border:2px solid var(--line);border-radius:12px;overflow:hidden;display:flex;flex-direction:column}
+.card.yes{border-color:var(--ok)} .card.no{opacity:.45}
+.media{position:relative;aspect-ratio:4/3;background:#000;cursor:pointer}
+.media model-viewer{width:100%;height:100%;background:radial-gradient(#3a3530,#151311);--poster-color:transparent}
+.media img,.media iframe{width:100%;height:100%;object-fit:cover;border:0;display:block}
+.media .play{position:absolute;inset:auto 10px 10px auto;background:rgba(0,0,0,.7);color:#fff;font-size:12px;padding:4px 8px;border-radius:6px}
+.body{padding:10px 12px;flex:1;display:flex;flex-direction:column;gap:6px}
+.name{font-weight:600}
+.meta{font-size:12px;color:var(--mute)}
+.meta a{color:inherit}
+.tag{display:inline-block;font-size:11px;padding:1px 6px;border-radius:4px;border:1px solid var(--line);margin-right:4px}
+.note{font-size:13px;flex:1}
+.acts{display:flex;gap:6px}
+.acts button{flex:1}
+.acts .y.on{background:var(--ok);border-color:var(--ok);color:#fff}
+.acts .n.on{background:var(--no);border-color:var(--no);color:#fff}
+.sound .body{gap:8px} audio{width:100%;height:36px}
+.warn{background:#fff3cd;color:#664d03;border:1px solid #ffe69c;border-radius:8px;padding:10px 12px;font-size:13px;margin:8px 0}
+@media (prefers-color-scheme:dark){.warn{background:#332701;color:#ffda6a;border-color:#664d03}}
+textarea{width:100%;height:160px;font:12px ui-monospace,monospace;background:var(--card);color:var(--ink);border:1px solid var(--line);border-radius:8px;padding:8px}
+</style>
+</head>
+<body>
+<header>
+  <h1>Sasta GTA: <span>asset shortlist</span></h1>
+  <span class="stat" id="stat"></span>
+  <button id="export" class="primary">Copy my picks</button>
+</header>
+<main>
+  <p class="intro"><b>Open this page via the game dev server (http://localhost:5173/asset-review/) so the sounds and local models load.</b> Click a thumbnail to load the live 3D viewer, where you can rotate the model and play its animations. Mark each asset 👍 or 👎. Your picks are saved in this browser. When you're done, press <b>Copy my picks</b> and paste the result back to Claude. Everything here is free: Sketchfab items are CC-BY (credit the author) or the Sketchfab Free Standard licence, and the last section is CC0.</p>
+  <div id="v2"></div>
+  <div id="sections"></div>
+  <h2>Your picks (JSON)</h2>
+  <textarea id="out" readonly></textarea>
+</main>
+<script src="catalog.js"></script>
+<script src="catalog-v2.js"></script>
+<script type="module" src="https://unpkg.com/@google/model-viewer@3.5.0/dist/model-viewer.min.js"></script>
+<script>
+const KEY='sasta-gta-picks';
+let picks={}; try{picks=JSON.parse(localStorage.getItem(KEY)||'{}')}catch(e){}
+const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(picks))}catch(e){} render()};
+const ALL=[...ASSETS];
+(function(){
+  const v2=document.getElementById('v2');
+  const add=(html)=>{const d=document.createElement('div');d.innerHTML=html;v2.append(...d.childNodes);};
+  add(`<h2>🔊 Desi meme sounds (spec 03): ${SOUNDS.length} clips</h2>
+  <div class="warn">⚠️ These are clips from Bollywood films and memes, scraped from myinstants.com. They're copyrighted, so they're OK for a private build, but must be replaced before the game is published. <b>Not found anywhere:</b> ${MISSING_SOUNDS.map(s=>'“'+s+'”').join(', ')}. If you have links, I'll add them.</div>`);
+  const sg=document.createElement('div');sg.className='grid';v2.append(sg);
+  for(const s of SOUNDS){
+    const a={uid:'snd:'+s.id,name:s.label,cat:'sound',source:'myinstants',license:'copyrighted meme',author:s.src,url:'/assets/sfx/'+s.id+'.mp3'};ALL.push(a);
+    const c=document.createElement('div');c.className='card sound';c.dataset.uid=a.uid;
+    c.innerHTML=`<div class="body"><div class="name"></div><div class="meta"><span class="tag"></span> Used for: <b class="use"></b></div>
+    <audio controls preload="none" src="/assets/sfx/${s.id}.mp3"></audio>
+    <div class="acts"><button class="y">👍 Keep</button><button class="n">👎 Skip</button></div></div>`;
+    c.querySelector('.name').textContent=s.label;c.querySelector('.tag').textContent=s.src;c.querySelector('.use').textContent=s.use;
+    sg.append(c);
+  }
+  const cats=[...new Set(LOCAL_MODELS.map(m=>m.cat))];
+  for(const cat of cats){
+    add(`<h2>🧍 Downloaded game models: ${cat}</h2>`);
+    const g=document.createElement('div');g.className='grid';v2.append(g);
+    for(const m of LOCAL_MODELS.filter(x=>x.cat===cat)){
+      const a={uid:'local:'+m.id,name:m.name,cat:'local-'+cat,source:'poly.pizza',license:m.license,author:m.author,url:'/assets/'+m.file};ALL.push(a);
+      const c=document.createElement('div');c.className='card';c.dataset.uid=a.uid;
+      c.innerHTML=`<div class="media"><model-viewer src="/assets/${m.file}" camera-controls auto-rotate autoplay shadow-intensity="1" exposure="1.1" loading="lazy"></model-viewer></div>
+      <div class="body"><div class="name"></div><div class="meta"><span class="tag">${m.license}</span> by <span class="au"></span></div><div class="note"></div>
+      <div class="acts"><button class="y">👍 Keep</button><button class="n">👎 Skip</button></div></div>`;
+      c.querySelector('.name').textContent=m.name;c.querySelector('.au').textContent=m.author;c.querySelector('.note').textContent=m.note;
+      g.append(c);
+    }
+  }
+  add(`<h2 style="margin-top:40px;opacity:.7">📦 Spec 01 shortlist (Sketchfab, needs a token to download)</h2>`);
+  v2.querySelectorAll('.card').forEach(c=>{const uid=c.dataset.uid;
+    c.querySelector('.y').onclick=()=>{picks[uid]=picks[uid]==='yes'?undefined:'yes';save()};
+    c.querySelector('.n').onclick=()=>{picks[uid]=picks[uid]==='no'?undefined:'no';save()};});
+})();
+const root=document.getElementById('sections');
+for(const [cat,title] of Object.entries(CATEGORIES)){
+  const list=ASSETS.filter(a=>a.cat===cat); if(!list.length) continue;
+  const h=document.createElement('h2'); h.textContent=`${title} (${list.length})`; root.append(h);
+  const g=document.createElement('div'); g.className='grid'; root.append(g);
+  for(const a of list){
+    const c=document.createElement('div'); c.className='card'; c.dataset.uid=a.uid;
+    c.innerHTML=`<div class="media"><img loading="lazy" src="${a.thumb}" alt=""><span class="play">${a.embed?'▶ Load 3D viewer':'↗ Open page'}</span></div>
+    <div class="body"><div class="name"></div>
+    <div class="meta"><span class="tag">${a.license}</span>${a.faces?`<span class="tag">${(a.faces/1000).toFixed(1)}k faces</span>`:''}${a.anims?`<span class="tag">${a.anims} anim</span>`:''}<br>by <a target="_blank" rel="noopener" href="${a.authorUrl}"></a> · <a target="_blank" rel="noopener" href="${a.url}">${a.source}</a></div>
+    <div class="note"></div>
+    <div class="acts"><button class="y">👍 Keep</button><button class="n">👎 Skip</button></div></div>`;
+    c.querySelector('.name').textContent=a.name;
+    c.querySelector('.meta a').textContent=a.author;
+    c.querySelector('.note').textContent=a.note;
+    c.querySelector('.media').onclick=e=>{
+      if(!a.embed){window.open(a.url,'_blank','noopener');return}
+      const m=e.currentTarget; if(m.querySelector('iframe')) return;
+      m.innerHTML=`<iframe allow="autoplay; fullscreen; xr-spatial-tracking" allowfullscreen src="${a.embed}?autostart=1&ui_infos=0&ui_watermark=0&ui_theme=dark&dnt=1"></iframe>`;
+    };
+    c.querySelector('.y').onclick=()=>{picks[a.uid]=picks[a.uid]==='yes'?undefined:'yes';save()};
+    c.querySelector('.n').onclick=()=>{picks[a.uid]=picks[a.uid]==='no'?undefined:'no';save()};
+    g.append(c);
+  }
+}
+function render(){
+  document.querySelectorAll('.card').forEach(c=>{const p=picks[c.dataset.uid];
+    c.classList.toggle('yes',p==='yes');c.classList.toggle('no',p==='no');
+    c.querySelector('.y').classList.toggle('on',p==='yes');c.querySelector('.n').classList.toggle('on',p==='no')});
+  const kept=ALL.filter(a=>picks[a.uid]==='yes');
+  document.getElementById('stat').textContent=`${kept.length} kept · ${ALL.filter(a=>picks[a.uid]==='no').length} skipped · ${ALL.length} total`;
+  document.getElementById('out').value=JSON.stringify(kept.map(a=>({uid:a.uid,name:a.name,cat:a.cat,source:a.source,license:a.license,author:a.author,url:a.url})),null,2);
+}
+document.getElementById('export').onclick=async()=>{const t=document.getElementById('out');
+  try{await navigator.clipboard.writeText(t.value)}catch(e){t.select();document.execCommand('copy')}
+  document.getElementById('export').textContent='Copied ✓';setTimeout(()=>document.getElementById('export').textContent='Copy my picks',1500)};
+render();
+</script>
+</body>
+</html>

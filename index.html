@@ -1,0 +1,128 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Sasta GTA: Bhaukaal Nagar</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🛺</text></svg>" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Anton&family=Rozha+One&family=Inter:wght@400;600;800&display=swap" rel="stylesheet" />
+</head>
+<body>
+  <canvas id="game"></canvas>
+
+  <!-- loading -->
+  <div id="loading" class="screen">
+    <div class="loadLogo"><span class="s">SASTA</span><span class="g">GTA</span></div>
+    <div class="loadBarWrap"><div id="loadingBar"></div></div>
+    <div id="loadingMsg">Loading…</div>
+    <div class="tip" id="loadTip">TIP: Gaay ko horn mat maaro. Woh tumse zyada local hai.</div>
+  </div>
+
+  <!-- title -->
+  <div id="title" class="screen hidden">
+    <div class="bars top"></div><div class="bars bottom"></div>
+    <div class="logo">
+      <div class="logoTop">SASTA</div>
+      <div class="logoMain">GTA</div>
+      <div class="logoHi">भौकाल नगर</div>
+      <div class="logoSub">BHAUKAAL NAGAR · EPISODE 1: HOSTEL SE BAHAR</div>
+    </div>
+    <div class="menu">
+      <button id="joinBtn" class="join">JOIN GAME <small>↵</small></button>
+      <button id="titleSettingsBtn" class="menuItem">SETTINGS</button>
+      <div class="menuItem dim">CREDITS <span>(public/assets/CREDITS.md)</span></div>
+    </div>
+    <div class="controls">
+      <div><kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd> chalo · <kbd>SHIFT</kbd> bhaago · <kbd>SPACE</kbd> kuudo</div>
+      <div><kbd>LMB</kbd> mukka / fire · <kbd>RMB</kbd> thappad · <kbd>E</kbd> hathiyaar wheel</div>
+      <div><kbd>1-6</kbd> hathiyaar · <kbd>F</kbd> gaadi · <kbd>H</kbd> horn</div>
+      <div><kbd>M</kbd> map · <kbd>ESC</kbd> pause</div>
+    </div>
+    <div class="musicHint" id="musicHint">🔊 click anywhere for music</div>
+    <div class="legal">Not affiliated with Rockstar Games. Bas sasta hai.</div>
+  </div>
+
+  <!-- in-game HUD -->
+  <div id="hud" class="hidden">
+    <div class="topRight">
+      <div class="weaponBox"><span id="weaponIcon">👊</span><span id="weaponName">MUKKA</span></div>
+      <div class="money">₹<span id="money">00000500</span></div>
+      <div class="moneyDelta" id="moneyDelta"></div>
+      <div class="stars" id="stars"><span>★</span><span>★</span><span>★</span><span>★</span><span>★</span></div>
+    </div>
+    <div class="radarWrap">
+      <canvas id="minimap" width="220" height="220"></canvas>
+      <div class="bars2"><div class="hp"><div id="hpFill"></div></div><div class="armor hidden"><div id="armorFill"></div></div></div>
+      <div id="wpDist"></div>
+    </div>
+    <div id="driveHelp" class="hidden"></div>
+    <div id="indicators" class="hidden"><span id="indL">◀</span><span id="indR">▶</span></div>
+    <div id="crosshair" class="hidden"></div>
+    <div id="wheel" class="hidden"><div class="wheelRing"></div><div class="wheelItems"></div><div class="wheelCenter"></div><div class="wheelHint">Mouse ghumao · E chhodo</div></div>
+    <div id="zone"></div>
+    <div id="speed"></div>
+    <div id="prompt"></div>
+    <div id="toast"></div>
+    <div id="hurt"></div>
+  </div>
+
+  <!-- shop (barber / clothes) -->
+  <div id="shop" class="hidden">
+    <div class="shopHead"><div id="shopTitle">SHOP</div><div id="shopMoney"></div></div>
+    <div id="shopTabs" class="tabs"></div>
+    <div id="shopList"></div>
+    <div class="shopBtns"><button id="shopBuy" class="join small">KHARIDO</button><button id="shopExit" class="ghost">BAHAR JAO (ESC)</button></div>
+  </div>
+
+  <!-- pause -->
+  <div id="pause" class="screen hidden">
+    <div class="pauseHead">
+      <div class="pauseTitle">PAUSED</div>
+      <div class="tabs">
+        <button data-tab="map" class="tab on">MAP</button>
+        <button data-tab="settings" class="tab">SETTINGS</button>
+        <button data-tab="cheats" class="tab">CHEATS</button>
+        <button data-tab="controls" class="tab">CONTROLS</button>
+      </div>
+      <div class="pauseBtns">
+        <button id="resumeBtn" class="join small">RESUME</button>
+        <button id="quitBtn" class="ghost">MAIN MENU</button>
+      </div>
+    </div>
+    <div class="tabBody" id="tab-map">
+      <canvas id="bigmap"></canvas>
+      <div class="mapLegend"><span style="border-color:#4fc3f7">✂️ Saloon</span><span style="border-color:#f48fb1">👕 Kapde</span><span style="border-color:#ff8a65">🔫 Hathiyaar</span><span style="border-color:#81c784">💊 Dawai</span><span style="border-color:#ffb74d">🛵 Gaadi showroom</span></div>
+      <div class="mapHelp">Click: set waypoint · Right-click: clear · Scroll: zoom · Drag: pan · <b>C</b>: centre on you</div>
+    </div>
+    <div class="tabBody hidden" id="tab-settings">
+      <div class="settingsGrid" id="settingsGrid"></div>
+    </div>
+    <div class="tabBody hidden" id="tab-cheats">
+      <p class="cheatIntro">Type these while playing, just like GTA. Shhh… 🤫</p>
+      <div class="cheatList" id="cheatList"></div>
+    </div>
+    <div class="tabBody hidden" id="tab-controls">
+      <div class="controlsGrid">
+        <div><kbd>W A S D</kbd> move / drive</div><div><kbd>SHIFT</kbd> run</div><div><kbd>SPACE</kbd> jump / handbrake</div>
+        <div><kbd>Mouse</kbd> look</div><div><kbd>LMB</kbd> punch / swing weapon</div><div><kbd>RMB</kbd> slap (thappad)</div>
+        <div><kbd>E</kbd> (hold) weapon wheel</div><div><kbd>1</kbd> fists <kbd>2</kbd> belt <kbd>3</kbd> lathi <kbd>4</kbd> hockey <kbd>5</kbd> bat <kbd>6</kbd> katta</div><div><kbd>Scroll</kbd> cycle weapons</div>
+        <div><kbd>R</kbd> reload katta</div><div><kbd>F</kbd> enter shop (yellow marker)</div>
+        <div><kbd>F</kbd> enter / exit vehicle</div><div><kbd>H</kbd> horn</div><div><kbd>M</kbd> map</div><div><kbd>ESC</kbd> pause</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- death -->
+  <div id="dead" class="screen hidden">
+    <div class="deadText">GHEE KHATAM</div>
+    <div class="deadHi">घी ख़तम</div>
+    <div class="deadSub" id="deadSub">Hospital ka bill: ₹0</div>
+  </div>
+
+  <!-- title settings popup reuses the settings grid -->
+  <div id="flash"></div>
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
