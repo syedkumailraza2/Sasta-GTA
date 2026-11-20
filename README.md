@@ -60,3 +60,18 @@ Wanted levels escalate: 1★ one or two constables with lathis, 2★ a police je
 | `src/audio.ts` | clips, meme voice lines, procedural desi title music & city ambience |
 
 See `public/assets/CREDITS.md` for asset licences. The meme sound clips are copyrighted: they're fine for a private build, but replace them before publishing.
+
+## Deploying (Vercel)
+
+Framework preset **Vite**, build `npm run build`, output `dist`.
+
+Environment variables (Project → Settings → Environment Variables), both optional:
+
+| Variable | What it does |
+|---|---|
+| `VITE_GA_MEASUREMENT_ID` | Google Analytics 4 ID (`G-…`). Without it no analytics script is loaded. |
+| `VITE_SITE_URL` | Your custom domain, e.g. `https://sastagta.in`. If unset, the Vercel production domain is used for canonical / Open Graph / sitemap URLs. |
+
+SEO: title/description, Open Graph + Twitter cards (`public/og-image.jpg`), JSON-LD `VideoGame` schema, web manifest + icons, and `robots.txt` / `sitemap.xml` generated at build time (see `vite.config.ts`).
+
+Analytics events: `game_loaded` (load time), `game_start`, `vehicle_enter` (kind), `shop_purchase` (shop, item, price), `cheat_used` (code), `wanted_level` (3★/5★), `player_death`, `kinnar_shagun`.

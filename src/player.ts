@@ -1,3 +1,4 @@
+import { track } from "./analytics";
 import { Grid } from "./grid";
 import { Color3, MeshBuilder, Ray, Scene, StandardMaterial, TransformNode, Vector3 } from "@babylonjs/core";
 import { Actor } from "./actor";
@@ -201,6 +202,7 @@ export class Player extends Actor {
 
   // ----------------------------------------------------------------- vehicles
   enter(v: Vehicle, traffic: TrafficManager) {
+    track("vehicle_enter", { kind: v.kind });
     traffic.takeOver(v);
     v.pickUp();
     this.vehicle = v; this.inVehicle = true;

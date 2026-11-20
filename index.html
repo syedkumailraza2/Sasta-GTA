@@ -3,14 +3,64 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Sasta GTA: Bhaukaal Nagar</title>
+  <title>Sasta GTA: Bhaukaal Nagar – Free Desi Open-World Browser Game</title>
+  <meta name="description" content="Sasta GTA is a free desi open-world game you play right in your browser. Drive autos, Bullets and supercars around Bhaukaal Nagar, dodge cows and traffic signals, fight with belts and cricket bats, outrun the police and the army, and hear Hindi meme dialogues. No download needed." />
+  <meta name="keywords" content="Sasta GTA, desi GTA, Indian GTA game, browser game, free online game, open world game, Bhaukaal Nagar, auto rickshaw game, Hindi game, WebGL game" />
+  <meta name="author" content="Syed Kumail Raza" />
+  <meta name="robots" content="index, follow, max-image-preview:large" />
+  <meta name="theme-color" content="#ff9f1c" />
+  <link rel="canonical" href="__SITE_URL__/" />
+  <link rel="manifest" href="/manifest.webmanifest" />
+  <link rel="icon" type="image/png" sizes="192x192" href="/icon-192.png" />
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
   <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🛺</text></svg>" />
+
+  <!-- Open Graph / WhatsApp / Facebook -->
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="Sasta GTA" />
+  <meta property="og:title" content="Sasta GTA: Bhaukaal Nagar – Desi open-world game in your browser" />
+  <meta property="og:description" content="Autos, Bullets, gaay mata, traffic signals, belts and cricket bats, pulis and fauj. Free to play, no download." />
+  <meta property="og:url" content="__SITE_URL__/" />
+  <meta property="og:image" content="__SITE_URL__/og-image.jpg" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta property="og:image:alt" content="Sasta GTA title screen over the streets of Bhaukaal Nagar" />
+  <meta property="og:locale" content="en_IN" />
+  <!-- Twitter / X -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Sasta GTA: Bhaukaal Nagar" />
+  <meta name="twitter:description" content="Free desi open-world game in your browser. Autos, cows, cops, cricket bats and Hindi memes." />
+  <meta name="twitter:image" content="__SITE_URL__/og-image.jpg" />
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "VideoGame",
+    "name": "Sasta GTA: Bhaukaal Nagar",
+    "url": "__SITE_URL__/",
+    "image": "__SITE_URL__/og-image.jpg",
+    "description": "A free desi open-world browser game set on the island town of Bhaukaal Nagar: drive autos, bikes, cars, boats and a helicopter, fight with belts and cricket bats, shop at the barber and fashion store, and escape the police and the army.",
+    "genre": ["Action", "Open world", "Driving"],
+    "gamePlatform": "Web browser",
+    "applicationCategory": "Game",
+    "operatingSystem": "Any (WebGL browser)",
+    "inLanguage": ["en", "hi"],
+    "playMode": "SinglePlayer",
+    "author": { "@type": "Person", "name": "Syed Kumail Raza" },
+    "offers": { "@type": "Offer", "price": "0", "priceCurrency": "INR" }
+  }
+  </script>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Anton&family=Rozha+One&family=Inter:wght@400;600;800&display=swap" rel="stylesheet" />
 </head>
 <body>
-  <canvas id="game"></canvas>
+  <canvas id="game" aria-label="Sasta GTA game view"></canvas>
+  <h1 class="srOnly">Sasta GTA: Bhaukaal Nagar – a free desi open-world game in your browser</h1>
+  <noscript>
+    <h1>Sasta GTA: Bhaukaal Nagar</h1>
+    <p>A free desi open-world game you play in your browser. It needs JavaScript and WebGL turned on.</p>
+  </noscript>
 
   <!-- loading -->
   <div id="loading" class="screen">

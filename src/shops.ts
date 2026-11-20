@@ -1,3 +1,4 @@
+import { track } from "./analytics";
 import { Color3, DynamicTexture, Mesh, MeshBuilder, StandardMaterial, TransformNode, Vector3 } from "@babylonjs/core";
 import type { ShopKind, ShopSpot } from "./world/town";
 import type { VehicleKind } from "./vehicles";
@@ -252,7 +253,7 @@ export class Shops {
       msg = it.act();
       if (msg === false) { this.w.hud.toast("🙅 Abhi zaroorat nahi hai (already full).", 1800); return; }
     }
-    if (!this.isOwned(it) && it.price) { pl.money -= it.price; this.w.hud.flashMoney(-it.price); }
+    if (!this.isOwned(it) && it.price) { pl.money -= it.price; this.w.hud.flashMoney(-it.price); track("shop_purchase", { shop: this.open.kind, item: it.key, price: it.price }); }
     if (it.set || it.once) this.owned.add(it.key);
     if (it.set) {
       this.committed = it.set(this.committed); this.preview = { ...this.committed };

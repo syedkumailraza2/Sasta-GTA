@@ -31,6 +31,7 @@ import { Shops } from "./shops";
 import { PlayerLook, loadLook } from "./look";
 import "./style.css";
 import { ColliderGrid, Grid } from "./grid";
+import { initAnalytics, track } from "./analytics";
 
 const $ = <T extends HTMLElement = HTMLElement>(id: string) => document.getElementById(id) as T;
 const setLoading = (msg: string, pct: number) => { $("loadingMsg").textContent = msg; $("loadingBar").style.width = `${pct}%`; };
@@ -45,6 +46,8 @@ const TIPS = [
 ];
 
 async function main() {
+  initAnalytics();
+  const loadStart = performance.now();
   $("loadTip").textContent = TIPS[Math.floor(Math.random() * TIPS.length)];
   const canvas = $<HTMLCanvasElement>("game");
   const engine = new Engine(canvas, true, { stencil: true, preserveDrawingBuffer: true }, false);
@@ -266,6 +269,7 @@ async function main() {
     { code: "TUNAKTUNAK", desc: "Party mode: everybody dances!", run: () => { cheatsState.party = true; audio.play("tunak_tunak", { bus: "music", volume: 1 }); setTimeout(() => (cheatsState.party = false), 12500); } },
   ];
   const cheats = new Cheats(cheatList, (c, msg) => {
+    track("cheat_used", { code: c.code });
     hud.toast(`🎉 CHEAT ACTIVATED: ${c.code} · ${msg}`, 4000);
     if (!["PAISAHIPAISA", "TUNAKTUNAK", "THULLAHATAO", "BADHAI"].includes(c.code)) audio.say("kaisa_laga_majak", { force: true });
   });
@@ -278,6 +282,7 @@ async function main() {
   // ---- wanted reactions ----
   let bribing = false; // the bribe cheat has its own line, so skip the usual "ek dum se waqt badal diya"
   wanted.onChange = (lvl, prev) => {
+    if (lvl > prev && (lvl === 3 || lvl === 5)) track("wanted_level", { level: lvl });
     if (lvl > prev) {
       if (lvl >= 5) audio.say("khel_khatam", { force: true });
       else if (lvl === 1) audio.say("iss_sajjan", { cooldown: 10 });
@@ -291,6 +296,7 @@ async function main() {
   let deadT = 0;
   player.onHurt = () => { hud.hurt(); chase.shake = 0.25; };
   player.onDeath = () => {
+    track("player_death", { wanted: wanted.level, in_vehicle: player.inVehicle });
     state = "dead"; deadT = 0;
     world.timeScale = 0.35;
     document.body.classList.add("grey");
@@ -323,7 +329,9 @@ async function main() {
   window.addEventListener("pointerdown", () => { if (state === "title") startTitleAudio(); });
   window.addEventListener("keydown", () => { if (state === "title") startTitleAudio(); });
 
+  let joined = 0;
   const join = () => {
+    track("game_start", { session_start: ++joined === 1 });
     audio.unlock();
     audio.stopMusic(); audio.startAmbience();
     state = "playing";
@@ -471,6 +479,7 @@ async function main() {
   scene.render(); poolVehicles();
   engine.runRenderLoop(() => scene.render());
   $("loading").classList.add("gone");
+  track("game_loaded", { load_seconds: Math.round((performance.now() - loadStart) / 100) / 10 });
   showTitle();
   (window as unknown as { __game: unknown }).__game = { scene, player, town, shops, playerLook, signals, kinnar, chase, join, input, engine, csm, npcs, traffic, wanted, pickups, audio, world, cheats, setWaypoint, minimap, menu };
 }

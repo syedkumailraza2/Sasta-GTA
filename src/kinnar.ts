@@ -1,3 +1,4 @@
+import { track } from "./analytics";
 import { Vector3 } from "@babylonjs/core";
 import { Actor } from "./actor";
 import type { Character } from "./characters";
@@ -93,7 +94,7 @@ export class Kinnar {
         this.prompt = `[G] ₹${SHAGUN} shagun do`;
         if (input?.pressed("KeyG")) {
           if (pl.money >= SHAGUN) {
-            pl.money -= SHAGUN; w.hud.flashMoney(-SHAGUN);
+            pl.money -= SHAGUN; w.hud.flashMoney(-SHAGUN); track("kinnar_shagun");
             pl.health = Math.min(pl.maxHealth, pl.health + 25);
             this.say("kinnar_bless", "जीता रह बेटा, खुश रह!", "Jeeta reh beta, khush reh!");
             w.hud.toast("🙏 Dua mil gayi! +25 health", 2500);
