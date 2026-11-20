@@ -37,10 +37,10 @@ const setLoading = (msg: string, pct: number) => { $("loadingMsg").textContent =
 const frame = () => new Promise((r) => requestAnimationFrame(() => setTimeout(r, 0)));
 const TIPS = [
   "TIP: Gaay ko horn mat maaro. Woh tumse zyada local hai.",
-  "TIP: E daba ke rakho: hathiyaar wheel. Belt, hockey, balla, katta… sab hai.",
+  "TIP: E daba ke rakho: hathiyaar wheel me Belt, hockey, balla, katta… sab hai.",
   "TIP: Salon mein naya hairstyle, Fashion Point pe naye kapde. Peela marker dhoondo.",
-  "TIP: Pulis ki gaadi chura sakte ho. Par kyun?",
-  "TIP: Chai pi lo, health wapas aa jayegi. Science hai.",
+  "TIP: police ki gaadi chura sakte ho. Par kyun karna hai?",
+  "TIP: Chai pi lo, health wapas aa jayegi. Hamare yaha aaisa hi hota hai.",
   "TIP: Map kholo (M), click karo, aur GPS pe bharosa rakho.",
 ];
 
@@ -184,7 +184,7 @@ async function main() {
   };
   traffic.init();
   // build spare bodies now (loading screen) so cops, soldiers, riders and police jeeps never stall the game later
-  setLoading("Pulis aur fauj ko taiyaar kar rahe hain…", 97);
+  setLoading("police ko taiyaar kar rahe hain…", 97);
   await frame();
   npcs.prewarm([["police", 7], ["army", 6], ["casual", 3], ["punk", 3], ["business", 3], ["beach", 3], ["woman1", 3], ["woman2", 3]]);
   const poolVehicles = traffic.prewarm([["police", 3], ["suv", 2], ["scooter", 2], ["motorcycle", 2], ["auto", 2], ["car_small", 2], ["car_sedan", 1], ["taxi", 1], ["truck", 1]]);
